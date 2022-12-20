@@ -19,7 +19,9 @@ dll_exports = {}
 capemon_hooks = {}
 
 # GOOGLE API https://programmablesearchengine.google.com/
+# https://developers.google.com/custom-search/v1/introduction -> Get a Key
 GOOGLE_API_KEY = "CHANGE_ME!" # Change with your own Custom Search API KEY
+# https://programmablesearchengine.google.com/controlpanel/all
 GOOGLE_CSE_ID = "CHANGE_ME!" # Change with your own CSE ID
 
 
@@ -69,25 +71,12 @@ def google_search(search_term, **kwargs):
     return res
 
 def get_microsoft_learn_entry(api_name):
-    # We query Google for site:learn.microsoft.com api_name and get 1st result
-    #query = "https://www.google.com/search?q={}+site%3Alearn.microsoft.com%2Fen-us%2F".format(api_name)
-    
-    # https://github.com/Nv7-GitHub/googlesearch
-    #print("Query: {}".format(query))
-    # Internally it uses a random user agent https://github.com/Nv7-GitHub/googlesearch/blob/master/googlesearch/__init__.py#L7
-    #results = requests.get(query, timeout = None, headers=headers)
     results = google_search(api_name)
-    print(results)
-    for result in results:
-        print("[*] Query results: {}".format(result))
-    return results[0]
+    return results["items"][0]["link"] # Get only "link" from the 1st result
 
 
 def obtain_SAL_prototype(api_name):
     microsoft_learn_URL = get_microsoft_learn_entry(api_name)
-    sys.exit()
-    #microsoft_learn_URL = "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getvolumeinformationa"
-    #microsoft_learn_URL = "https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-acquiresrwlockexclusive"
     r = requests.get(microsoft_learn_URL)
     result = BeautifulSoup(r.text, "html.parser")
     result = result.find("code", class_="lang-cpp")
@@ -163,10 +152,7 @@ if __name__ == "__main__":
         # If hooks.c file does not exist, download it    
         obtain_hooks_file() 
 
-        # Parse the file and create a dictionary of APIs already hooked
-        #get_capemon_hooks() 
-        #generate_hooks("GetVolumeInformationA", dll_exports["GetVolumeInformationA"])
-        
+        # Parse the file and create a dictionary of APIs already hooked        
         for hook in dll_exports:
             if hook not in capemon_hooks:
                 generate_hooks(hook, dll_exports[hook])
