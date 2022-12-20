@@ -11,11 +11,17 @@ import re
 from bs4 import BeautifulSoup
 import pathlib
 import random
+from googleapiclient.discovery import build
 
 # GLOBALS #
 # Using dictionaries because of lookup performance https://towardsdatascience.com/faster-lookups-in-python-1d7503e9cd38
 dll_exports = {}
 capemon_hooks = {}
+
+# GOOGLE API https://programmablesearchengine.google.com/
+GOOGLE_API_KEY = "CHANGE_ME!" # Change with your own Custom Search API KEY
+GOOGLE_CSE_ID = "CHANGE_ME!" # Change with your own CSE ID
+
 
 def print_usage():
     print("[+] Usage:\n\tpython3 generate_hooks.py dll_1.dll dll_2.dll ... or:")
@@ -57,28 +63,21 @@ def get_capemon_hooks():
                 capemon_hooks[line] = "" # Since capemon_hooks is a dictionary, keys are automatically unique
             line = file.readline()
 
+def google_search(search_term, **kwargs):
+    service = build("customsearch", "v1", developerKey=GOOGLE_API_KEY)
+    res = service.cse().list(q=search_term, cx=GOOGLE_CSE_ID, **kwargs).execute()
+    return res
+
 def get_microsoft_learn_entry(api_name):
     # We query Google for site:learn.microsoft.com api_name and get 1st result
-    #query = "{} site:learn.microsoft.com".format(api_name)
-    #query = "https://learn.microsoft.com/en-us/search/?terms={}".format(api_name)
-    query = "https://www.google.com/search?q={}+site%3Alearn.microsoft.com%2Fen-us%2F".format(api_name)
+    #query = "https://www.google.com/search?q={}+site%3Alearn.microsoft.com%2Fen-us%2F".format(api_name)
     
-    headers = {'User-Agent': random.choice(
-            [
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0',
-                'Mozilla/5.0 (Windows NT 10.0; Win 64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36',
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36',
-            ]
-        )
-    }
-
     # https://github.com/Nv7-GitHub/googlesearch
-    print("Query: {}".format(query))
+    #print("Query: {}".format(query))
     # Internally it uses a random user agent https://github.com/Nv7-GitHub/googlesearch/blob/master/googlesearch/__init__.py#L7
-    results = requests.get(query, timeout = None, headers=headers)
-    print(results.text)
+    #results = requests.get(query, timeout = None, headers=headers)
+    results = google_search(api_name)
+    print(results)
     for result in results:
         print("[*] Query results: {}".format(result))
     return results[0]
