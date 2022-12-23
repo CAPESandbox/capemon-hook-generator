@@ -72,6 +72,8 @@ def google_search(search_term, **kwargs):
 
 def get_microsoft_learn_entry(api_name):
     results = google_search(api_name)
+    if not "items" in results: # In case there are no results
+        return
     return results["items"][0]["link"] # Get only "link" from the 1st result
 
 
