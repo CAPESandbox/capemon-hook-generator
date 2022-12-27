@@ -24,6 +24,7 @@ capemon_hooks = {}
 GOOGLE_API_KEY = "" # Change with your own Custom Search API KEY in config.ini
 # https://programmablesearchengine.google.com/controlpanel/all
 GOOGLE_CSE_ID = "" # Change with your own CSE ID in config.ini
+GOOGLE_SEARCH = False # Modified to True in case API keys are specified
 
 
 def print_usage():
@@ -45,6 +46,13 @@ def read_api_keys():
         print(f"[!] Error while reading config.ini -> {e}")
         return False
 
+def obtain_winapi_file():
+    if not os.path.exists("winapi_categories.json"):
+        print("[*] winapi_categories.json file not detected. Downloading from repo (https://github.com/RazviOverflow/winapi_categories_json)\n")
+        r = requests.get("https://raw.githubusercontent.com/RazviOverflow/winapi_categories_json/main/winapi_categories.json")
+        with open("winapi_categories.json", "w") as hooks_file:
+            hooks_file.write(r.text)
+
 def obtain_exports(dll):
     try:
         pe = pefile.PE(dll)
@@ -58,9 +66,8 @@ def obtain_exports(dll):
 
 def obtain_hooks_file():
     if not os.path.exists("hooks.c"):
-        print("[*] hooks.c file not detected. Downloading from original capemon repo (https://github.com/kevoreilly/capemon\n")
+        print("[*] hooks.c file not detected. Downloading from original capemon repo (https://github.com/kevoreilly/capemon)\n")
         r = requests.get("https://raw.githubusercontent.com/kevoreilly/capemon/capemon/hooks.c")
-        #print(r.text)
         with open("hooks.c", "w") as hooks_file:
             hooks_file.write(r.text)
            
@@ -164,9 +171,11 @@ if __name__ == "__main__":
         print_usage()
     else :
         if read_api_keys():
-            print(f"GOOGLE API KEYS: {GOOGLE_API_KEY} - {GOOGLE_CSE_ID}")
+            GOOGLE_SEARCH = True
         else:
             print("[!] Couldn't read Google API keys, skipping scrapping")
+
+        obtain_winapi_file()
 
         for dll in sys.argv[1:]:
             # Obtain APIs from EAT of given dll(s)
