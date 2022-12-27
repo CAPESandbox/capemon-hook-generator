@@ -2,6 +2,7 @@
 # RazviOverflow
 
 import os
+import json
 import pefile
 from pprint import pprint
 import sys
@@ -20,14 +21,29 @@ capemon_hooks = {}
 
 # GOOGLE API https://programmablesearchengine.google.com/
 # https://developers.google.com/custom-search/v1/introduction -> Get a Key
-GOOGLE_API_KEY = "CHANGE_ME!" # Change with your own Custom Search API KEY
+GOOGLE_API_KEY = "" # Change with your own Custom Search API KEY in config.ini
 # https://programmablesearchengine.google.com/controlpanel/all
-GOOGLE_CSE_ID = "CHANGE_ME!" # Change with your own CSE ID
+GOOGLE_CSE_ID = "" # Change with your own CSE ID in config.ini
 
 
 def print_usage():
     print("[+] Usage:\n\tpython3 generate_hooks.py dll_1.dll dll_2.dll ... or:")
     print("\t./generate_hooks.py dll_1.dll dll_2.dll ...")
+
+def read_api_keys():
+    try:
+        with open("config.ini") as file:
+            data = json.load(file)
+            global GOOGLE_API_KEY, GOOGLE_CSE_ID
+            GOOGLE_API_KEY = data['GOOGLE_API_KEY']
+            GOOGLE_CSE_ID = data['GOOGLE_CSE_ID']
+            if GOOGLE_API_KEY == "CHANGE_ME!" or GOOGLE_CSE_ID == "CHANGE_ME!":
+                print("[!] Google API keys unspecified")
+                return False
+        return True
+    except Exception as e:
+        print(f"[!] Error while reading config.ini -> {e}")
+        return False
 
 def obtain_exports(dll):
     try:
@@ -147,6 +163,11 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print_usage()
     else :
+        if read_api_keys():
+            print(f"GOOGLE API KEYS: {GOOGLE_API_KEY} - {GOOGLE_CSE_ID}")
+        else:
+            print("[!] Couldn't read Google API keys, skipping scrapping")
+
         for dll in sys.argv[1:]:
             # Obtain APIs from EAT of given dll(s)
             obtain_exports(dll) 
