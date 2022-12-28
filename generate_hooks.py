@@ -25,6 +25,7 @@ GOOGLE_API_KEY = "" # Change with your own Custom Search API KEY in config.ini
 # https://programmablesearchengine.google.com/controlpanel/all
 GOOGLE_CSE_ID = "" # Change with your own CSE ID in config.ini
 GOOGLE_SEARCH = False # Modified to True in case API keys are specified
+JSON_DATA = "" # Assigned once winapi_categories.json is loaded
 
 
 def print_usage():
@@ -52,6 +53,8 @@ def obtain_winapi_file():
         r = requests.get("https://raw.githubusercontent.com/RazviOverflow/winapi_categories_json/main/winapi_categories.json")
         with open("winapi_categories.json", "w") as hooks_file:
             hooks_file.write(r.text)
+    else:
+        print("[*] winapi_categories.json file detected.")
 
 def obtain_exports(dll):
     try:
@@ -66,10 +69,24 @@ def obtain_exports(dll):
 
 def obtain_hooks_file():
     if not os.path.exists("hooks.c"):
-        print("[*] hooks.c file not detected. Downloading from original capemon repo (https://github.com/kevoreilly/capemon)\n")
+        print("[*] hooks.c file not detected. Downloading from original capemon repo (https://github.com/kevoreilly/capemon)")
         r = requests.get("https://raw.githubusercontent.com/kevoreilly/capemon/capemon/hooks.c")
         with open("hooks.c", "w") as hooks_file:
             hooks_file.write(r.text)
+    else:
+        print("[*] hooks.c file not detected")
+
+def search_api_in_json_file(api_name):
+    print(f"[*] Looking for {api_name} in winapi_categories_json")
+    return_value = False
+    if api_name in JSON_DATA:
+        return_value = {}
+        return_value['return_type'] = JSON_DATA[api_name]['return_type']
+        return_value['parameters'] = JSON_DATA[api_name]['arguments']
+        print(f"[*] {api_name} found in winapi_categories_json")
+    else:
+        print(f"[*] {api_name} not found in winapi_categories_json")
+    return return_value
            
 def get_capemon_hooks():
     with open("hooks.c", "r") as file:
@@ -96,45 +113,67 @@ def google_search(search_term, **kwargs):
 def get_microsoft_learn_entry(api_name):
     results = google_search(api_name)
     if not "items" in results: # In case there are no results
-        return
+        return False
     return results["items"][0]["link"] # Get only "link" from the 1st result
 
 
 def obtain_SAL_prototype(api_name):
-    microsoft_learn_URL = get_microsoft_learn_entry(api_name)
-    r = requests.get(microsoft_learn_URL)
-    result = BeautifulSoup(r.text, "html.parser")
-    result = result.find("code", class_="lang-cpp")
-    result = result.text # Result now contains the SAL notation as stated by learn.microsoft
+    result = False
+
+    data = search_api_in_json_file(api_name)
+    if not data:
+        print(f"[!] Couldn't find entry for {api_name} in winapi_categories_json!")
+        if GOOGLE_SEARCH:
+            print(f"[*] Googling for {api_name}!")
+            microsoft_learn_URL = get_microsoft_learn_entry(api_name)
+            if not microsoft_learn_URL:
+                print(f"[!] Couldn't find entry for {api_name} in Google!")
+            else:
+                r = requests.get(microsoft_learn_URL)
+                result = BeautifulSoup(r.text, "html.parser")
+                result = result.find("code", class_="lang-cpp")
+                if result is None:
+                    result = BeautifulSoup(r.text, "html.parser")
+                    result = result.find("code", class_="lang-C") # Some entries are marked with lang-C rather than lang-cpp
+                if result is None:
+                    result = BeautifulSoup(r.text, "html.parser")
+                    result = result.find("code", class_="lang-C++") # Some entries are marked with lang-C++ rather than lang-cpp or lang-C
+                if result is None:
+                    print(f"[!] ERROR. Couldn't find exact entry for {api_name}. Consider manually looking for it. Skipping to next API call!")
+                result = result.text # Result now contains the SAL notation as stated by learn.microsoft
+    else:
+        result = data    
     return result
 
 def append_hook_h(api_name, return_type, calling_convention, parameters):
     with open("extended_hooks.h", "a") as file:
-        file.write("HOOKDEF({} ,{} ,{},{});".format(return_type, calling_convention, api_name, parameters))
+        file.write(f"HOOKDEF({return_type}, {calling_convention}, {api_name},\n{parameters}\n);\n")
 
 def append_hook_c(api_name, dll):
     with open("extended_hooks.c", "a") as file:
-        file.write("HOOK({}, {}),".format(dll, api_name))
+        file.write(f"HOOK({dll}, {api_name}),\n")
 
 def append_hook_misc_c(api_name, return_type, calling_convention, parameters):
     with open("extended_hook_misc.c", "a") as file:
-        file.write("HOOKDEF({} ,{} ,{},{}){{\n".format(return_type, calling_convention, api_name, parameters))
-        file.write("\tDebuggerOutput(\"[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked {}\\n\");\n".format(api_name))
+        file.write(f"HOOKDEF({return_type} ,{calling_convention} ,{api_name},\n{parameters}\n){{\n")
+        file.write(f"\tDebuggerOutput(\"[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked {api_name}\\n\");\n")
         if return_type == 'void':
             file.write("\tOld_{}(".format(api_name))
             # Transform the SAL parameters into a list comprising only their names
-            for parameter in parameters.strip().split("\n"):
-                file.write(parameter.split()[-1])
+            if len(parameters) > 2:
+                for parameter in parameters.strip().split("\n"):
+                    file.write(parameter.split()[-1])
             file.write(");\n")
             file.write("\tLOQ_bool(\"misc\", \"\");\n")
         else:
             file.write("\t{} ret = Old_{}(".format(return_type, api_name));
-            for parameter in parameters.strip().split("\n"):
-                file.write(parameter.split()[-1])
+            if len(parameters) > 2:
+                for parameter in parameters.strip().split("\n"):
+                    file.write(parameter.split()[-1])
             file.write(");\n")
             file.write("\tLOQ_bool(\"misc\", \"\");\n")
             file.write("\treturn ret;\n")
-        file.write("\n}")
+        file.write("}\n\n")
 
 # Function used to transform parameters according to true SAL notation.
 # https://learn.microsoft.com/en-us/cpp/code-quality/understanding-sal?view=msvc-170
@@ -149,14 +188,39 @@ def transform_SAL_parameters(parameters):
     return parameters
 
 def generate_hooks(api_name, dll):
-    
+    print(f"[+] Generation of hook for {api_name} started")
     SAL_notation = obtain_SAL_prototype(api_name)
 
-    # Parse the SAL_notation text and transform it to hooks.h syntax
-    return_type = SAL_notation[:SAL_notation.index(api_name)].strip() # Everything before the api_name itself is the ret type
-    calling_convention = "WINAPI" # ****ATTENTION!**** WINAPI is assumid, but it might be incorrect (notice winsock2.h, for example)
-    parameters = SAL_notation[SAL_notation.index('(')+1:SAL_notation.index(')')] #+1 to skip '('
-    parameters = transform_SAL_parameters(parameters)
+    # If API is found in winapi_categories.json its type is <class 'dict'>
+    # if it is found in Google + learn.microsoft.com, its type is <class 'str'>
+    # if it isn't found, the variable is just false
+    if SAL_notation == False:
+        print(f"[!] Couldn't generate hook for {api_name}, skipping API call!")
+        return
+    elif type(SAL_notation) is dict:
+        return_type = SAL_notation['return_type']
+        calling_convention = "WINAPI"
+        parameters = ""
+        for parameter in SAL_notation['parameters']:
+            local_parameter = f"\t{parameter['in_out']} {parameter['type']} {parameter['name']},\n"
+            parameters += local_parameter
+        parameters = parameters[:-2] # Delete last trailing comma and newline
+
+    elif type(SAL_notation) is str:
+        try:
+            # Parse the SAL_notation text and transform it to hooks.h syntax
+            return_type = SAL_notation[:SAL_notation.index(api_name)].strip() # Everything before the api_name itself is the ret type
+            calling_convention = "WINAPI" # ****ATTENTION!**** WINAPI is assumid, but it might be incorrect (notice winsock2.h, for example)
+            parameters = SAL_notation[SAL_notation.index('(')+1:SAL_notation.index(')')] #+1 to skip '('
+            parameters = transform_SAL_parameters(parameters)
+        except Exception as e:
+            print(f"[!] Error occurred while Googling for {api_name}. Skipping to next API call!")
+            print(f"[!] ERROR: {e}")
+            return
+    else:
+        print("[!] ERROR. Variable type not recognized. Unexpected behavior taking place. Aborting!")
+        sys.exit()
+    
     # Generate entry for hooks.h
     append_hook_h(api_name, return_type, calling_convention, parameters)
     
@@ -175,7 +239,12 @@ if __name__ == "__main__":
         else:
             print("[!] Couldn't read Google API keys, skipping scrapping")
 
+        # Obtain winapi_categories.json if it isn't already present
         obtain_winapi_file()
+        # Load into memory the JSON data
+        with open("winapi_categories.json") as file:
+            print("[*] Loading winapi_categories.json file")
+            JSON_DATA = json.load(file)
 
         for dll in sys.argv[1:]:
             # Obtain APIs from EAT of given dll(s)
