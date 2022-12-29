@@ -44,7 +44,7 @@ def read_api_keys():
                 return False
         return True
     except Exception as e:
-        print(f"[!] Error while reading config.ini -> {e}")
+        print(f"[!!!] Error while reading config.ini -> {e}")
         return False
 
 def obtain_winapi_file():
@@ -65,7 +65,7 @@ def obtain_exports(dll):
             except:
                 continue
     except Exception as e:
-        print("[!] Error: {}".format(e))
+        print("[!!!] Error: {}".format(e))
 
 def obtain_hooks_file():
     if not os.path.exists("hooks.c"):
@@ -122,13 +122,14 @@ def obtain_SAL_prototype(api_name):
 
     data = search_api_in_json_file(api_name)
     if not data:
-        print(f"[!] Couldn't find entry for {api_name} in winapi_categories_json!")
+        print(f"[!!!] Couldn't find entry for {api_name} in winapi_categories_json!")
         if GOOGLE_SEARCH:
             print(f"[*] Googling for {api_name}!")
             microsoft_learn_URL = get_microsoft_learn_entry(api_name)
             if not microsoft_learn_URL:
-                print(f"[!] Couldn't find entry for {api_name} in Google!")
+                print(f"[!!!] Couldn't find entry for {api_name} in Google!")
             else:
+                print(f"[*] Found results in Google for {api_name}!")
                 r = requests.get(microsoft_learn_URL)
                 result = BeautifulSoup(r.text, "html.parser")
                 result = result.find("code", class_="lang-cpp")
@@ -139,7 +140,7 @@ def obtain_SAL_prototype(api_name):
                     result = BeautifulSoup(r.text, "html.parser")
                     result = result.find("code", class_="lang-C++") # Some entries are marked with lang-C++ rather than lang-cpp or lang-C
                 if result is None:
-                    print(f"[!] ERROR. Couldn't find exact entry for {api_name}. Consider manually looking for it. Skipping to next API call!")
+                    print(f"[!!!] ERROR. Couldn't find exact entry for {api_name}. Consider manually looking for it. Skipping to next API call!")
                 result = result.text # Result now contains the SAL notation as stated by learn.microsoft
     else:
         result = data    
@@ -188,14 +189,14 @@ def transform_SAL_parameters(parameters):
     return parameters
 
 def generate_hooks(api_name, dll):
-    print(f"[+] Generation of hook for {api_name} started")
+    print(f"[+++] Generation of hook for {api_name} started")
     SAL_notation = obtain_SAL_prototype(api_name)
 
     # If API is found in winapi_categories.json its type is <class 'dict'>
     # if it is found in Google + learn.microsoft.com, its type is <class 'str'>
     # if it isn't found, the variable is just false
     if SAL_notation == False:
-        print(f"[!] Couldn't generate hook for {api_name}, skipping API call!")
+        print(f"[!!!] Couldn't generate hook for {api_name}, skipping API call!")
         return
     elif type(SAL_notation) is dict:
         return_type = SAL_notation['return_type']
@@ -214,11 +215,11 @@ def generate_hooks(api_name, dll):
             parameters = SAL_notation[SAL_notation.index('(')+1:SAL_notation.index(')')] #+1 to skip '('
             parameters = transform_SAL_parameters(parameters)
         except Exception as e:
-            print(f"[!] Error occurred while Googling for {api_name}. Skipping to next API call!")
-            print(f"[!] ERROR: {e}")
+            print(f"[!!!] Error occurred while Googling for {api_name}. Skipping to next API call!")
+            print(f"[!!!] ERROR: {e}")
             return
     else:
-        print("[!] ERROR. Variable type not recognized. Unexpected behavior taking place. Aborting!")
+        print("[!!!] ERROR. Variable type not recognized. Unexpected behavior taking place. Aborting!")
         sys.exit()
     
     # Generate entry for hooks.h
@@ -230,6 +231,8 @@ def generate_hooks(api_name, dll):
     # Generate entry for hooks_misc.c
     append_hook_misc_c(api_name, return_type, calling_convention, parameters)
 
+    print("[+++] Generation of hook finished")
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print_usage()
@@ -237,7 +240,7 @@ if __name__ == "__main__":
         if read_api_keys():
             GOOGLE_SEARCH = True
         else:
-            print("[!] Couldn't read Google API keys, skipping scrapping")
+            print("[!!!] Couldn't read Google API keys, skipping scrapping")
 
         # Obtain winapi_categories.json if it isn't already present
         obtain_winapi_file()
