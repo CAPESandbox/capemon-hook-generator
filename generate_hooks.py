@@ -148,7 +148,7 @@ def obtain_SAL_prototype(api_name):
 
 def append_hook_h(api_name, return_type, calling_convention, parameters):
     with open("extended_hooks.h", "a") as file:
-        file.write(f"HOOKDEF({return_type}, {calling_convention}, {api_name},\n{parameters}\n);\n")
+        file.write(f"HOOKDEF({return_type}, {calling_convention}, {api_name},\n{parameters}\n);\n\n")
 
 def append_hook_c(api_name, dll):
     with open("extended_hooks.c", "a") as file:
@@ -192,7 +192,7 @@ def generate_hooks(api_name, dll):
     print(f"[+++] Generation of hook for {api_name} started")
     SAL_notation = obtain_SAL_prototype(api_name)
 
-    # If API is found in winapi_categories.json its type is <class 'dict'>
+    # If API is found in winapi_categories.json, its type is <class 'dict'>
     # if it is found in Google + learn.microsoft.com, its type is <class 'str'>
     # if it isn't found, the variable is just false
     if SAL_notation == False:
@@ -212,7 +212,7 @@ def generate_hooks(api_name, dll):
             # Parse the SAL_notation text and transform it to hooks.h syntax
             return_type = SAL_notation[:SAL_notation.index(api_name)].strip() # Everything before the api_name itself is the ret type
             calling_convention = "WINAPI" # ****ATTENTION!**** WINAPI is assumid, but it might be incorrect (notice winsock2.h, for example)
-            parameters = SAL_notation[SAL_notation.index('(')+1:SAL_notation.index(')')] #+1 to skip '('
+            parameters = SAL_notation[SAL_notation.index('(')+1:SAL_notation.index(')')].strip() #+1 to skip '('
             parameters = transform_SAL_parameters(parameters)
         except Exception as e:
             print(f"[!!!] Error occurred while Googling for {api_name}. Skipping to next API call!")
