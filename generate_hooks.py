@@ -298,6 +298,9 @@ if __name__ == "__main__":
         # If hooks.c file does not exist, download it    
         obtain_hooks_file() 
 
+        # Parse the file and create a dictionary of APIs already hooked
+        get_capemon_hooks() 
+
         # Create generated files
         create_hook_h()
         create_hook_c()
@@ -312,10 +315,15 @@ if __name__ == "__main__":
             for hook in dll_exports:
                 if hook not in capemon_hooks:
                     generate_hooks(hook, dll_exports[hook])
+                else:
+                    print(f"[!] API {hook} already present in hooks.c. Skipping to next API call!")
         if arguments.api:
             apis = arguments.api.split(',')
             for api in apis:
-                generate_hooks(api)
+                if api not in capemon_hooks:
+                    generate_hooks(api)
+                else:
+                    print(f"[!] API {api} already present in hooks.c. Skipping to next API call!")
             
         
 
