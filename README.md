@@ -117,7 +117,7 @@ HOOKDEF(BOOL, WINAPI, GetVolumeInformationW,
 	WINAPI calling convention is assumed, but it might be incorrect!
 */
 
-HOOKDEF(FARPROC ,WINAPI ,GetProcAddress,
+HOOKDEF(FARPROC, WINAPI, GetProcAddress,
 	_In_ HMODULE hModule,
 	_In_ LPCSTR lpProcName
 ){
@@ -127,7 +127,7 @@ HOOKDEF(FARPROC ,WINAPI ,GetProcAddress,
 	return ret;
 }
 
-HOOKDEF(HMODULE ,WINAPI ,GetModuleHandleA,
+HOOKDEF(HMODULE, WINAPI, GetModuleHandleA,
 	_In_opt_ LPCSTR lpModuleName
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked GetModuleHandleA\n");
@@ -136,7 +136,7 @@ HOOKDEF(HMODULE ,WINAPI ,GetModuleHandleA,
 	return ret;
 }
 
-HOOKDEF(HMODULE ,WINAPI ,GetModuleHandleW,
+HOOKDEF(HMODULE, WINAPI, GetModuleHandleW,
 	_In_opt_ LPCWSTR lpModuleName
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked GetModuleHandleW\n");
@@ -145,7 +145,7 @@ HOOKDEF(HMODULE ,WINAPI ,GetModuleHandleW,
 	return ret;
 }
 
-HOOKDEF(VOID ,WINAPI ,Sleep,
+HOOKDEF(VOID, WINAPI, Sleep,
 	_In_ DWORD dwMilliseconds
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked Sleep\n");
@@ -153,7 +153,7 @@ HOOKDEF(VOID ,WINAPI ,Sleep,
 	LOQ_bool("misc", ""); // Modify category and log according to your needs
 }
 
-HOOKDEF(HANDLE ,WINAPI ,CreateMutexA,
+HOOKDEF(HANDLE, WINAPI, CreateMutexA,
 	_In_opt_ LPSECURITY_ATTRIBUTES lpMutexAttributes,
   _In_           BOOL                  bInitialOwner,
   _In_opt_ LPCSTR                lpName
@@ -164,7 +164,7 @@ HOOKDEF(HANDLE ,WINAPI ,CreateMutexA,
 	return ret;
 }
 
-HOOKDEF(HANDLE ,WINAPI ,CreateMutexW,
+HOOKDEF(HANDLE, WINAPI, CreateMutexW,
 	_In_opt_ LPSECURITY_ATTRIBUTES lpMutexAttributes,
   _In_           BOOL                  bInitialOwner,
   _In_opt_ LPCWSTR               lpName
@@ -175,7 +175,7 @@ HOOKDEF(HANDLE ,WINAPI ,CreateMutexW,
 	return ret;
 }
 
-HOOKDEF(BOOL ,WINAPI ,GetVolumeInformationA,
+HOOKDEF(BOOL, WINAPI, GetVolumeInformationA,
 	_In_opt_  LPCSTR  lpRootPathName,
   _Out_opt_ LPSTR   lpVolumeNameBuffer,
   _In_            DWORD   nVolumeNameSize,
@@ -191,7 +191,7 @@ HOOKDEF(BOOL ,WINAPI ,GetVolumeInformationA,
 	return ret;
 }
 
-HOOKDEF(BOOL ,WINAPI ,GetVolumeInformationW,
+HOOKDEF(BOOL, WINAPI, GetVolumeInformationW,
 	_In_opt_  LPCWSTR lpRootPathName,
   _Out_opt_ LPWSTR  lpVolumeNameBuffer,
   _In_            DWORD   nVolumeNameSize,
