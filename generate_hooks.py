@@ -195,7 +195,7 @@ def append_hook_c(api_name, dll):
 
 def append_hook_misc_c(api_name, return_type, calling_convention, parameters):
     with open("extended_hook_misc.c", "a") as file:
-        file.write(f"HOOKDEF({return_type} ,{calling_convention} ,{api_name},\n{parameters}\n){{\n")
+        file.write(f"HOOKDEF({return_type}, {calling_convention}, {api_name},\n{parameters}\n){{\n")
         file.write(f"\tDebuggerOutput(\"[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked {api_name}\\n\");\n")
         if return_type.lower() == 'void':
             file.write("\tOld_{}(".format(api_name))
