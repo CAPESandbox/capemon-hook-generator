@@ -155,7 +155,7 @@ def obtain_SAL_prototype(api_name):
                     result = result.find("code", class_="lang-C++") # Some entries are marked with lang-C++ rather than lang-cpp or lang-C
                 if result is None:
                     print(f"[!!!] ERROR. Couldn't find exact entry for {api_name}. Consider manually looking for it. Skipping to next API call!")
-                dll = original_result.find("meta", attrs={'name':'req.dll'})
+                dll = original_result.find("meta", attrs={'name':'req.dll'}) # Required dll is specified with metatag req.dll
                 result = result.text # Result now contains the SAL notation as stated by learn.microsoft
                 result += "###" + dll['content']
                 #### BUSCAR DLL Y AÑADIR #### APPEND AL STRING PARA DESPUES INTERPRETARLA
@@ -190,6 +190,7 @@ def append_hook_h(api_name, return_type, calling_convention, parameters):
         file.write(f"HOOKDEF({return_type}, {calling_convention}, {api_name},\n{parameters}\n);\n\n")
 
 def append_hook_c(api_name, dll):
+    dll = dll.split('.')[0].lower() # dll value is full dll name, like kernel32.dll. Only kernel32 is needed
     with open("extended_hooks.c", "a") as file:
         file.write(f"HOOK({dll}, {api_name}),\n")
 
