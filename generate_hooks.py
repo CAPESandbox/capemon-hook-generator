@@ -205,7 +205,7 @@ def append_hook_misc_c(api_name, return_type, calling_convention, parameters):
                 for parameter in parameters.strip().split("\n"):
                     file.write(parameter.split()[-1]) # Parameters is of the likes of: "_In_ DWORD dwMilliseconds"
             file.write(");\n")
-            file.write("\tLOQ_bool(\"misc\", \"\"); // Modify category and log according to your needs\n")
+            file.write("\tLOQ_bool(\"misc\", \"\"); // Modify category, LOQ_ function and log message according to your needs\n")
         else:
             file.write("\t{} ret = Old_{}(".format(return_type, api_name));
             if len(parameters) > 2:

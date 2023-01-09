@@ -23,10 +23,10 @@ The script performs the following steps:
 10. If the Google search is enabled, Google for it in `site:learn.microsoft.com`. Scrape the first result (we assume it is the correct one), parse the data and go back to 8 with the next API call. If there are no Google results, go back to 8 with the next API call.
 
 ## Example
-Let's say you already configured your keys in the `config.ini` file (so the script uses Google to scrape learn.microsoft.com for the entries not present in the JSON file) and you want to generate capemon hooks skeleton for the following APIs: GetProcAddress, GetModuleHandleA, GetModuleHandleW, Sleep, CreateMutexA, CreateMutexW, GetVolumeInformationA and GetVolumeInformationW. You would run the script like so:
+Let's say you already configured your keys in the `config.ini` file (so the script uses Google to scrape learn.microsoft.com for the entries not present in the JSON file) and you want to generate capemon hooks skeleton for the following APIs: CloseHandle, Process32First, Process32Next, ExitProcess, GetProcAddress, GetModuleHandleA, GetModuleHandleW, Sleep, CreateMutexA, CreateMutexW, GetVolumeInformationA and GetVolumeInformationW. You would run the script like so:
 
 ```
-$ python3 generate_hooks.py --api GetProcAddress,GetModuleHandleA,GetModuleHandleW,Sleep,CreateMutexA,CreateMutexW,GetVolumeInformationA,GetVolumeInformationW
+python3 generate_hooks.py --api CloseHandle,Process32First,Process32Next,ExitProcess,GetProcAddress,GetModuleHandleA,GetModuleHandleW,Sleep,CreateMutexA,CreateMutexW,GetVolumeInformationA,GetVolumeInformationW
 ```
 
 The script produces three files. Namely, extended_hooks.c, extended_hooks.h and extended_hook_misc.c with the following contents
@@ -39,14 +39,18 @@ The script produces three files. Namely, extended_hooks.c, extended_hooks.h and 
 	For example, hook_t full_hooks[].
 */
 
-HOOK(Kernel32.dll, GetProcAddress),
-HOOK(Kernel32.dll, GetModuleHandleA),
-HOOK(Kernel32.dll, GetModuleHandleW),
-HOOK(Kernel32.dll, Sleep),
-HOOK(Kernel32.dll, CreateMutexA),
-HOOK(Kernel32.dll, CreateMutexW),
-HOOK(Kernel32.dll, GetVolumeInformationA),
-HOOK(Kernel32.dll, GetVolumeInformationW),
+HOOK(kernel32, CloseHandle),
+HOOK(kernel32, Process32First),
+HOOK(kernel32, Process32Next),
+HOOK(kernel32, ExitProcess),
+HOOK(kernel32, GetProcAddress),
+HOOK(kernel32, GetModuleHandleA),
+HOOK(kernel32, GetModuleHandleW),
+HOOK(kernel32, Sleep),
+HOOK(kernel32, CreateMutexA),
+HOOK(kernel32, CreateMutexW),
+HOOK(kernel32, GetVolumeInformationA),
+HOOK(kernel32, GetVolumeInformationW),
 ```
 
 ### extended_hooks.h example
@@ -56,6 +60,24 @@ HOOK(Kernel32.dll, GetVolumeInformationW),
 	The contents of this file can be appended to your local hooks.h
 	WINAPI calling convention is assumed, but it might be incorrect!
 */
+
+HOOKDEF(BOOL, WINAPI, CloseHandle,
+	_In_ HANDLE hObject
+);
+
+HOOKDEF(BOOL, WINAPI, Process32First,
+	_In_ HANDLE hSnapshot,
+	_Inout_ LPPROCESSENTRY32 lppe
+);
+
+HOOKDEF(BOOL, WINAPI, Process32Next,
+	_In_ HANDLE hSnapshot,
+	_Out_ LPPROCESSENTRY32 lppe
+);
+
+HOOKDEF(VOID, WINAPI, ExitProcess,
+	_In_ UINT uExitCode
+);
 
 HOOKDEF(FARPROC, WINAPI, GetProcAddress,
 	_In_ HMODULE hModule,
@@ -116,6 +138,43 @@ HOOKDEF(BOOL, WINAPI, GetVolumeInformationW,
 	The contents of this file can be appended to your local hook_{{category}}.c they belong.
 	WINAPI calling convention is assumed, but it might be incorrect!
 */
+
+HOOKDEF(BOOL, WINAPI, CloseHandle,
+	_In_ HANDLE hObject
+){
+	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked CloseHandle\n");
+	BOOL ret = Old_CloseHandle(hObject);
+	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	return ret;
+}
+
+HOOKDEF(BOOL, WINAPI, Process32First,
+	_In_ HANDLE hSnapshot,
+	_Inout_ LPPROCESSENTRY32 lppe
+){
+	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked Process32First\n");
+	BOOL ret = Old_Process32First(hSnapshot,lppe);
+	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	return ret;
+}
+
+HOOKDEF(BOOL, WINAPI, Process32Next,
+	_In_ HANDLE hSnapshot,
+	_Out_ LPPROCESSENTRY32 lppe
+){
+	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked Process32Next\n");
+	BOOL ret = Old_Process32Next(hSnapshot,lppe);
+	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	return ret;
+}
+
+HOOKDEF(VOID, WINAPI, ExitProcess,
+	_In_ UINT uExitCode
+){
+	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked ExitProcess\n");
+	Old_ExitProcess(uExitCode);
+	LOQ_bool("misc", ""); // Modify category and log according to your needs
+}
 
 HOOKDEF(FARPROC, WINAPI, GetProcAddress,
 	_In_ HMODULE hModule,
