@@ -144,7 +144,7 @@ HOOKDEF(BOOL, WINAPI, CloseHandle,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked CloseHandle\n");
 	BOOL ret = Old_CloseHandle(hObject);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 	return ret;
 }
 
@@ -154,7 +154,7 @@ HOOKDEF(BOOL, WINAPI, Process32First,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked Process32First\n");
 	BOOL ret = Old_Process32First(hSnapshot,lppe);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 	return ret;
 }
 
@@ -164,7 +164,7 @@ HOOKDEF(BOOL, WINAPI, Process32Next,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked Process32Next\n");
 	BOOL ret = Old_Process32Next(hSnapshot,lppe);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 	return ret;
 }
 
@@ -173,7 +173,7 @@ HOOKDEF(VOID, WINAPI, ExitProcess,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked ExitProcess\n");
 	Old_ExitProcess(uExitCode);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 }
 
 HOOKDEF(FARPROC, WINAPI, GetProcAddress,
@@ -182,7 +182,7 @@ HOOKDEF(FARPROC, WINAPI, GetProcAddress,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked GetProcAddress\n");
 	FARPROC ret = Old_GetProcAddress(hModule,lpProcName);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 	return ret;
 }
 
@@ -191,7 +191,7 @@ HOOKDEF(HMODULE, WINAPI, GetModuleHandleA,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked GetModuleHandleA\n");
 	HMODULE ret = Old_GetModuleHandleA(lpModuleName);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 	return ret;
 }
 
@@ -200,7 +200,7 @@ HOOKDEF(HMODULE, WINAPI, GetModuleHandleW,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked GetModuleHandleW\n");
 	HMODULE ret = Old_GetModuleHandleW(lpModuleName);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 	return ret;
 }
 
@@ -209,7 +209,7 @@ HOOKDEF(VOID, WINAPI, Sleep,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked Sleep\n");
 	Old_Sleep(dwMilliseconds);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 }
 
 HOOKDEF(HANDLE, WINAPI, CreateMutexA,
@@ -219,7 +219,7 @@ HOOKDEF(HANDLE, WINAPI, CreateMutexA,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked CreateMutexA\n");
 	HANDLE ret = Old_CreateMutexA(lpMutexAttributes,bInitialOwner,lpName);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 	return ret;
 }
 
@@ -230,7 +230,7 @@ HOOKDEF(HANDLE, WINAPI, CreateMutexW,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked CreateMutexW\n");
 	HANDLE ret = Old_CreateMutexW(lpMutexAttributes,bInitialOwner,lpName);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 	return ret;
 }
 
@@ -246,7 +246,7 @@ HOOKDEF(BOOL, WINAPI, GetVolumeInformationA,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked GetVolumeInformationA\n");
 	BOOL ret = Old_GetVolumeInformationA(lpRootPathName,lpVolumeNameBuffer,nVolumeNameSize,lpVolumeSerialNumber,lpMaximumComponentLength,lpFileSystemFlags,lpFileSystemNameBuffer,nFileSystemNameSize);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 	return ret;
 }
 
@@ -262,7 +262,7 @@ HOOKDEF(BOOL, WINAPI, GetVolumeInformationW,
 ){
 	DebuggerOutput("[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked GetVolumeInformationW\n");
 	BOOL ret = Old_GetVolumeInformationW(lpRootPathName,lpVolumeNameBuffer,nVolumeNameSize,lpVolumeSerialNumber,lpMaximumComponentLength,lpFileSystemFlags,lpFileSystemNameBuffer,nFileSystemNameSize);
-	LOQ_bool("misc", ""); // Modify category and log according to your needs
+	LOQ_bool("misc", ""); // Modify category, LOQ_ function and log message according to your needs
 	return ret;
 }
 ```

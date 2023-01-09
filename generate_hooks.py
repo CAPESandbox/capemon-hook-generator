@@ -212,7 +212,7 @@ def append_hook_misc_c(api_name, return_type, calling_convention, parameters):
                 for parameter in parameters.strip().split("\n"):
                     file.write(parameter.split()[-1])
             file.write(");\n")
-            file.write("\tLOQ_bool(\"misc\", \"\"); // Modify category and log according to your needs\n")
+            file.write("\tLOQ_bool(\"misc\", \"\"); // Modify category, LOQ_ function and log message according to your needs\n")
             file.write("\treturn ret;\n")
         file.write("}\n\n")
 
