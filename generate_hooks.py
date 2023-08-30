@@ -266,6 +266,10 @@ def generate_hooks(api_name, dll=""):
         print("[!!!] ERROR. Variable type not recognized. Unexpected behavior taking place. Aborting!")
         sys.exit()
     
+    # If no parameters were found, void must be specified.
+    if not len(parameters):
+        parameters = "\tvoid"
+
     # Generate entry for hooks.h
     append_hook_h(api_name, return_type, calling_convention, parameters)
     
