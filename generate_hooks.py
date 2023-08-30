@@ -198,6 +198,12 @@ def append_hook_misc_c(api_name, return_type, calling_convention, parameters):
     with open("extended_hook_misc.c", "a") as file:
         file.write(f"HOOKDEF({return_type}, {calling_convention}, {api_name},\n{parameters}\n){{\n")
         file.write(f"\tDebuggerOutput(\"[***** DEBUG MESSAGE - EXTENDED HOOKS *****] Hooked {api_name}\\n\");\n")
+
+        # If parameter is void, it only needs to be specified in the header. The acutal call must
+        # be left empty like GetLasterror() not GetLastError(void)
+        if parameters == "\tvoid":
+            parameters = ""
+
         if return_type.lower() == 'void':
             file.write("\tOld_{}(".format(api_name))
             # Transform the SAL parameters into a list comprising only their names
