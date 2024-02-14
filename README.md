@@ -1,6 +1,6 @@
 # CAPEv2 (capemon) hook(s) generator
 
-This script automatically generates new hooks (hookdefs) for capemon, the CAPEv2 monitor. The hooks are generated according to the info specified in [this repo](https://github.com/RazviOverflow/capemon#how-to-add-hooks-to-capemon). Please bear in mind the generated files are just skeletons to help you define new hooks, you must adapt them according to your needs.
+This script automatically generates new hooks (hookdefs) for capemon, the CAPEv2 monitor. The hooks are generated according to the info specified in [this repo](https://github.com/RazviOverflow/capemon#how-to-add-hooks-to-capemon) (now included in the official [CAPE](https://github.com/kevoreilly/capemon?tab=readme-ov-file#how-to-add-hooks-to-capemon) repo). Please bear in mind the generated files are just skeletons to help you define new hooks, you must adapt them according to your needs.
 
 ## Usage
 
