@@ -1,5 +1,10 @@
 #!/usr/bin/python3
-# RazviOverflow
+'''
+@Authors:
+    Razvan Raducu (RazviOverflow)
+    Ricardo J. Rodríguez
+    Pedro Álvarez
+'''
 
 import os
 import json
