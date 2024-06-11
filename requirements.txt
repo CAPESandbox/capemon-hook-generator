@@ -1,4 +1,4 @@
 beautifulsoup4==4.11.1
 google_api_python_client==2.70.0
 pefile==2021.9.3
-Requests==2.31.0
+requests>=2.32.0
