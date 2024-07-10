@@ -94,6 +94,11 @@ def search_api_in_json_file(api_name):
     print(f"[*] Looking for {api_name} in winapi_categories_json")
     return_value = False
     if api_name in JSON_DATA:
+        # First check if the entry is correctly formatted in the winapi_categories file.
+        # If it isn't, Google it
+        if not JSON_DATA[api_name]["dll"] and not JSON_DATA[api_name]["header"] and JSON_DATA[api_name]["n_arguments"] == 0:
+            print(f"[*] {api_name} found in winapi_categories_json but entry is empty.")
+            return return_value
         return_value = {}
         return_value['return_type'] = JSON_DATA[api_name]['return_type']
         return_value['parameters'] = JSON_DATA[api_name]['arguments']
@@ -161,9 +166,9 @@ def obtain_SAL_prototype(api_name):
                 if result is None:
                     print(f"[!!!] ERROR. Couldn't find exact entry for {api_name}. Consider manually looking for it. Skipping to next API call!")
                 dll = original_result.find("meta", attrs={'name':'req.dll'}) # Required dll is specified with metatag req.dll
-                result = result.text # Result now contains the SAL notation as stated by learn.microsoft
-                result += "###" + dll['content']
-                #### BUSCAR DLL Y AÑADIR #### APPEND AL STRING PARA DESPUES INTERPRETARLA
+                if result is not None:
+                    result = result.text # Result now contains the SAL notation as stated by learn.microsoft
+                    result += "###" + dll['content']
     else:
         result = data    
     return result
