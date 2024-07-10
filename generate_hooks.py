@@ -146,7 +146,7 @@ def obtain_SAL_prototype(api_name):
 
     data = search_api_in_json_file(api_name)
     if not data:
-        print(f"[!!!] Couldn't find entry for {api_name} in winapi_categories_json!")
+        print(f"[!!!] Couldn't find entry for {api_name} in winapi_categories_json or it is empty!")
         if GOOGLE_SEARCH:
             print(f"[*] Googling for {api_name}!")
             microsoft_learn_URL = get_microsoft_learn_entry(api_name)
@@ -267,6 +267,7 @@ def generate_hooks(api_name, dll=""):
     elif type(SAL_notation) is str:
         try:
             # Parse the SAL_notation text and transform it to hooks.h syntax
+           
             return_type = SAL_notation[:SAL_notation.index(api_name)].strip() # Everything before the api_name itself is the ret type
             calling_convention = "WINAPI" # ****ATTENTION!**** WINAPI is assumed, but it might be incorrect (notice winsock2.h, for example)
             parameters = SAL_notation[SAL_notation.index('(')+1:SAL_notation.index(')')].strip() #+1 to skip '('
@@ -275,8 +276,7 @@ def generate_hooks(api_name, dll=""):
             if dll == "":
                 dll = SAL_notation.split("###")[1]
         except Exception as e:
-            print(f"[!!!] Error occurred while Googling for {api_name}. Skipping to next API call!")
-            print(f"[!!!] ERROR: {e}")
+            print(f"[!!!] Error occurred while Googling for {api_name}: {e} - {repr(e)}.\n\tSkipping to next API call!")
             return
     else:
         print("[!!!] ERROR. Variable type not recognized. Unexpected behavior taking place. Aborting!")
