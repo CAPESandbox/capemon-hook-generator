@@ -16,7 +16,7 @@ authors:
     affiliation: "Department of Computer Science and Systems Engineering, University of Zaragoza"
     orcid: "https://orcid.org/0000-0002-6584-7259"
 date-released: 2024-06-11
-title: "CAPEv2 (capemon) Hooks Generator"
+title: "CAPE Hook Generator"
 url: "https://github.com/reverseame/cape-hook-generator"
 version: "1.0"
 license: GPL-3.0
