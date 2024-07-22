@@ -1,6 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it as follows."
 type: software
+abstract: "This script automatically generates new hooks (hookdefs) for capemon, the CAPEv2 monitor."
 authors:
   - family-names: "Raducu"
     given-names: "Razvan"
