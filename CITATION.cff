@@ -1,5 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it as follows."
+type: software
 authors:
   - family-names: "Raducu"
     given-names: "Razvan"
@@ -17,26 +18,14 @@ date-released: 2024-06-11
 title: "CAPEv2 (capemon) Hooks Generator"
 url: "https://github.com/reverseame/cape-hook-generator"
 version: "1.0"
+license: GPL-3.0
 keywords:
   - cape
   - monitor
+  - capemon
+  - capev2
   - sandbox
   - hook
   - generator
   - malware
   - analysis
-preferred-citation:
-  type: software
-  authors:
-  - family-names: "Raducu"
-    given-names: "Razvan"
-    affiliation: "Department of Computer Science and Systems Engineering, University of Zaragoza"
-    orcid: "https://orcid.org/0000-0002-8938-755X"
-  - family-names: "Ricardo J."
-    given-names: "Rodríguez"
-    affiliation: "Department of Computer Science and Systems Engineering, University of Zaragoza"
-    orcid: "https://orcid.org/0000-0001-7982-0359"
-  - family-names: "Pedro"
-    given-names: "Álvarez"
-    affiliation: "Department of Computer Science and Systems Engineering, University of Zaragoza"
-    orcid: "https://orcid.org/0000-0002-6584-7259"
