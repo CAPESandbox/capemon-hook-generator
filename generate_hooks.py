@@ -1,5 +1,10 @@
 #!/usr/bin/python3
-# RazviOverflow
+'''
+@Authors:
+    Razvan Raducu (RazviOverflow)
+    Ricardo J. Rodríguez
+    Pedro Álvarez
+'''
 
 import os
 import json
@@ -89,6 +94,11 @@ def search_api_in_json_file(api_name):
     print(f"[*] Looking for {api_name} in winapi_categories_json")
     return_value = False
     if api_name in JSON_DATA:
+        # First check if the entry is correctly formatted in the winapi_categories file.
+        # If it isn't, Google it
+        if not JSON_DATA[api_name]["dll"] and not JSON_DATA[api_name]["header"] and JSON_DATA[api_name]["n_arguments"] == 0:
+            print(f"[*] {api_name} found in winapi_categories_json but entry is empty.")
+            return return_value
         return_value = {}
         return_value['return_type'] = JSON_DATA[api_name]['return_type']
         return_value['parameters'] = JSON_DATA[api_name]['arguments']
@@ -136,7 +146,7 @@ def obtain_SAL_prototype(api_name):
 
     data = search_api_in_json_file(api_name)
     if not data:
-        print(f"[!!!] Couldn't find entry for {api_name} in winapi_categories_json!")
+        print(f"[!!!] Couldn't find entry for {api_name} in winapi_categories_json or it is empty!")
         if GOOGLE_SEARCH:
             print(f"[*] Googling for {api_name}!")
             microsoft_learn_URL = get_microsoft_learn_entry(api_name)
@@ -156,9 +166,9 @@ def obtain_SAL_prototype(api_name):
                 if result is None:
                     print(f"[!!!] ERROR. Couldn't find exact entry for {api_name}. Consider manually looking for it. Skipping to next API call!")
                 dll = original_result.find("meta", attrs={'name':'req.dll'}) # Required dll is specified with metatag req.dll
-                result = result.text # Result now contains the SAL notation as stated by learn.microsoft
-                result += "###" + dll['content']
-                #### BUSCAR DLL Y AÑADIR #### APPEND AL STRING PARA DESPUES INTERPRETARLA
+                if result is not None:
+                    result = result.text # Result now contains the SAL notation as stated by learn.microsoft
+                    result += "###" + dll['content']
     else:
         result = data    
     return result
@@ -257,6 +267,7 @@ def generate_hooks(api_name, dll=""):
     elif type(SAL_notation) is str:
         try:
             # Parse the SAL_notation text and transform it to hooks.h syntax
+           
             return_type = SAL_notation[:SAL_notation.index(api_name)].strip() # Everything before the api_name itself is the ret type
             calling_convention = "WINAPI" # ****ATTENTION!**** WINAPI is assumed, but it might be incorrect (notice winsock2.h, for example)
             parameters = SAL_notation[SAL_notation.index('(')+1:SAL_notation.index(')')].strip() #+1 to skip '('
@@ -265,8 +276,7 @@ def generate_hooks(api_name, dll=""):
             if dll == "":
                 dll = SAL_notation.split("###")[1]
         except Exception as e:
-            print(f"[!!!] Error occurred while Googling for {api_name}. Skipping to next API call!")
-            print(f"[!!!] ERROR: {e}")
+            print(f"[!!!] Error occurred while Googling for {api_name}: {e} - {repr(e)}.\n\tSkipping to next API call!")
             return
     else:
         print("[!!!] ERROR. Variable type not recognized. Unexpected behavior taking place. Aborting!")

@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as follows."
+type: software
+abstract: "This script automatically generates new hooks (hookdefs) for capemon, the CAPEv2 monitor."
+authors:
+  - family-names: "Raducu"
+    given-names: "Razvan"
+    affiliation: "Department of Computer Science and Systems Engineering, University of Zaragoza"
+    orcid: "https://orcid.org/0000-0002-8938-755X"
+  - family-names: "Rodríguez"
+    given-names: "Ricardo J."
+    affiliation: "Department of Computer Science and Systems Engineering, University of Zaragoza"
+    orcid: "https://orcid.org/0000-0001-7982-0359"
+  - family-names: "Álvarez"
+    given-names: "Pedro"
+    affiliation: "Department of Computer Science and Systems Engineering, University of Zaragoza"
+    orcid: "https://orcid.org/0000-0002-6584-7259"
+date-released: 2024-06-11
+title: "CAPE Hook Generator"
+url: "https://github.com/reverseame/cape-hook-generator"
+version: "1.0"
+license: GPL-3.0
+keywords:
+  - cape
+  - monitor
+  - capemon
+  - capev2
+  - sandbox
+  - hook
+  - generator
+  - malware
+  - analysis
